@@ -126,6 +126,4 @@ def create_reciept(file_path, db):
 with sessionLocal() as db:
     with db.begin():
         new_reciept = create_reciept("output.txt", db)
-        #new_reciept = Reciept(store="WALMART", subtotal="11.99", total="67.00", date="08/20/10")
-        #db.add(new_reciept)
     db.refresh(new_reciept)
