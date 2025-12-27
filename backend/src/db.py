@@ -128,3 +128,6 @@ def save_output():
         with db.begin():
             new_reciept = create_reciept("output.txt", db)
         db.refresh(new_reciept)
+
+if __name__ == "__main__":
+    save_output()

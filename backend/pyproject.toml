@@ -1,7 +1,7 @@
 [project]
 name = "recieptwallet"
 version = "0.1.0"
-description = "Add your description here"
+description = "An app that keeps track of your reciepts"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
