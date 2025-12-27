@@ -34,3 +34,6 @@ def get_output():
         print("Error: The local image file was not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    get_output()
