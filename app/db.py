@@ -123,7 +123,8 @@ def create_reciept(file_path, db):
     db.add(new_reciept)
     return new_reciept
 
-with sessionLocal() as db:
-    with db.begin():
-        new_reciept = create_reciept("output.txt", db)
-    db.refresh(new_reciept)
+def save_output():
+    with sessionLocal() as db:
+        with db.begin():
+            new_reciept = create_reciept("output.txt", db)
+        db.refresh(new_reciept)
