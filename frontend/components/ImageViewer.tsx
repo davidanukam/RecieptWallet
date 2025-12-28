@@ -13,7 +13,7 @@ export default function ImageViewer({ imgSource }: Props) {
     return (
         <Image
             source={imgSource}
-            className="w-[320px] h-[440px] rounded-[18px] shadow-md"
+            className="w-[320px] h-[440px] rounded-[18px] border-2 border-[#444c50]"
         />
     );
 }

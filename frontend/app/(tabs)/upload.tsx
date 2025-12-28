@@ -1,13 +1,26 @@
+import Button from '@/components/Button';
+import CancelButton from '@/components/CancelButton';
 import ImageViewer from '@/components/ImageViewer';
-import UploadButton from '@/components/UploadButton';
+import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from "expo-router";
 import { useState } from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
-const PlaceholderImage = require("../../assets/images/icon.png");
+const PlaceholderImage = require("../../assets/images/react-logo.png");
 
 export default function Upload() {
     const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+    const router = useRouter();
+
+    const editReceipt = () => {
+        router.push("/edit_receipt");
+    };
+
+    const cancel = () => {
+        // refresh screen
+        setSelectedImageUri(null);
+    }
 
     const pickImageAsync = async () => {
         // Request media library permissions
@@ -26,7 +39,7 @@ export default function Upload() {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: true, // Allows user to crop
-            aspect: [4, 4], // Aspect ratio for editing
+            aspect: [4, 3], // Aspect ratio for editing
             quality: 1, // Highest quality
         });
 
@@ -82,29 +95,34 @@ export default function Upload() {
 
 
     return (
-        <View className="flex-1 items-center justify-center bg-green-300">
-            <Text className="my-5">Add Image</Text>
-            {selectedImageUri ? (
-                <ImageViewer imgSource={selectedImageUri} />
-            ) : (
-                <ImageViewer imgSource={PlaceholderImage} />
-            )}
+        <View className="flex-1 items-center justify-center bg-[#171c1f]">
+            <Text className="my-5 text-white">Add Image</Text>
             <View>
-                <UploadButton label="Capture Reciept" onClick={pickImageAsync} />
+                {selectedImageUri ? (
+                    <ImageViewer imgSource={selectedImageUri} />
+                ) : (
+                    <ImageViewer imgSource={PlaceholderImage} />
+                )}
+            </View>
+            <View>
+                {selectedImageUri ? (
+                    <View>
+                        <Button
+                            label="Edit"
+                            icon={<Feather name="edit" size={24} color="black" />}
+                            onClick={editReceipt} />
+                        <CancelButton
+                            label="cancel"
+                            icon={<Feather name="x" size={24} color="black" />}
+                            onClick={cancel} />
+                    </View>
+                ) : (
+                    <Button
+                        label="Upload"
+                        icon={<Feather name="upload" size={24} color="black" />}
+                        onClick={pickImageAsync} />
+                )}
             </View>
         </View>
     );
 }
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    image: {
-        width: 200,
-        height: 200,
-    },
-});
