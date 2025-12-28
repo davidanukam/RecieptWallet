@@ -11,7 +11,7 @@ headers = {
 	"x-rapidapi-host": "ocr43.p.rapidapi.com",
 }
 
-file_path = "./app/images/test_reciept.png"
+file_path = "./app/images/test_receipt.png"
 
 def get_output():
     try:
