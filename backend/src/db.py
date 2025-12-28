@@ -4,15 +4,15 @@ import re
 from decimal import Decimal
 
 from sqlalchemy import create_engine, delete, String, DECIMAL
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, sessionmaker, Mapped, mapped_column
 
 DATABASE_URL = "sqlite:///./wallet.db"
 
 class Base(DeclarativeBase):
     pass
 
-class Reciept(Base):
-    __tablename__ = "reciepts"
+class Receipt(Base):
+    __tablename__ = "receipts"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     store: Mapped[str] = mapped_column(String(100))
@@ -35,36 +35,29 @@ def get_db():
 def clear_db():
     with sessionLocal() as db:
         with db.begin():
-            db.execute(delete(Reciept))
+            db.execute(delete(Receipt))
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "-c":
         clear_db()
+        print("Cleared Database")
         sys.exit()
 
-letters = [chr(i) for i in range(97, 97 + 26)]
-numbers = [i for i in range(10)]
-punc = [chr(i) for i in range(32, 48)]
-punc.extend([chr(i) for i in range(58, 65)])
-punc.extend([chr(i) for i in range(91, 97)])
-punc.extend([chr(i) for i in range(123, 127)])
-punc.pop(punc.index("-"))
+def create_receipt(file_path, db):
+    stores = {
+        "walmart" : "Walmart",
+        "nofrills" : "No Frills",
+        "costco" : "Costco",
+        "food" : "Food Basics",
+        "shoppers" : "Shoppers Drug Mart"
+    }
 
-stores = {
-    "walmart" : "Walmart",
-    "nofrills" : "No Frills",
-    "costco" : "Costco",
-    "food" : "Food Basics",
-    "shoppers" : "Shoppers Drug Mart"
-}
+    # Regex Patterns
+    # Matches: 12.34 or 1,200.50
+    PRICE_PATTERN = r"(\d{1,3}(?:,\d{3})*\.\d{2})"
+    # Matches: MM/DD/YY, MM/DD/YYYY, or DD-MM-YYYY
+    DATE_PATTERN = r"(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})"
 
-# Regex Patterns
-# Matches: 12.34 or 1,200.50
-PRICE_PATTERN = r"(\d{1,3}(?:,\d{3})*\.\d{2})"
-# Matches: MM/DD/YY, MM/DD/YYYY, or DD-MM-YYYY
-DATE_PATTERN = r"(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})"
-
-def create_reciept(file_path, db):
     # Clean output
     lines = []
     with open(file_path, "r") as f:
@@ -114,19 +107,19 @@ def create_reciept(file_path, db):
                     total = float(next_line_price.group(1))
 
     # 3. Save to Database
-    new_reciept = Reciept(
+    new_receipt = Receipt(
         store=store,
         subtotal=subtotal,
         total=total,
         date=date[:8]
     )
-    db.add(new_reciept)
-    return new_reciept
+    db.add(new_receipt)
+    return new_receipt
 
 def save_output():
     with sessionLocal() as db:
         with db.begin():
-            new_reciept = create_reciept("output.txt", db)
+            new_reciept = create_receipt("output.txt", db)
         db.refresh(new_reciept)
 
 if __name__ == "__main__":
